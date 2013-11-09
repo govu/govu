@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>Album List</title>
+    </head>
+
+    <body>
+        <h2>Create new album</h2>
+        <!-- 
+        When submitted, this form triggers create method in the index controller (index.js)
+        And also sets artist & title properties
+        -->
+        <form method="post" action="/index/create">
+            
+            Artist: <input name="artist"/><br/>
+            Title: <input name="title" /><br/>
+            <input type="submit"/>
+        </form>
+
+        <hr/>
+        <h2>Album List</h2>
+        <ul>
+            <!-- albums array is populated by index controller (index.js) on page load -->
+            <% 
+            for (var i=0;i< albums.length;i++) { 
+            var album = albums[i];
+            %>
+            <li>
+                <% print(album.title); %> (<% print(album.artist); %>)
+                <a href="/index/edit?id=<% print(album.id); %>">[edit]</a>
+                <a href="/index/remove?id=<% print(album.id); %>">[remove]</a>
+            </li>
+            <% } %>
+        </ul>
+    </body>
+</html>
