@@ -11,7 +11,8 @@ Single layer for web development. Use javaScript for: database, back-end and fro
 
 ## Getting Started ##
 
-[Let's get started!](https://github.com/easylibs/govu/wiki/Getting-Started)
+* [Let's get started!](https://github.com/easylibs/govu/wiki/Getting-Started)
+* [Commands] (https://github.com/easylibs/govu/wiki/Commands)
 
 ## Reviews about Govu ##
 
