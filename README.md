@@ -4,8 +4,8 @@ Govu is a platform featuring single language (Javascript) & databaseless web dev
 
 ## Highlights ##
 
-- Single language: Javascript, for both backend & frontend
-- Databaseless development: Just create your data model classes
+- [Single language](https://github.com/easylibs/govu/wiki/Single-Language-Web-Development): Javascript, for both backend & frontend
+- [Databaseless development](https://github.com/easylibs/govu/wiki/Databaseless-Web-Development): Just create your data model classes
 - MVC pattern
 - Super fast, super light
 
