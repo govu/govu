@@ -4,8 +4,8 @@ Single layer for web development. Use javaScript for: database, back-end and fro
 
 ## Highlights ##
 
-- Develop database, frontend & backend just with JavaScript
-- No need for a database installation or configuration
+- Single language,Javascript for both backend & frontend
+- Forget about database, just create your data models.
 - MVC pattern
 - Super fast, super light
 
