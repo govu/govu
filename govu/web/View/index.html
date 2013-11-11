@@ -27,7 +27,6 @@
             %>
             <li>
                 <% print(album.title); %> (<% print(album.artist); %>)
-                <a href="/index/edit?id=<% print(album.id); %>">[edit]</a>
                 <a href="/index/remove?id=<% print(album.id); %>">[remove]</a>
             </li>
             <% } %>

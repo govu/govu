@@ -1,4 +1,4 @@
-//Use Album class which is located in /Model/Album.js by default
+//Use Album class which is located in /Model/Album.js
 use("Album"); 
 
 //Parameters set by submitted form at index.html
@@ -9,10 +9,9 @@ var title;
 //List of albums populated when index is called
 var albums;
 
-
-
 //Index function called on page load
 var index = function() {
+    //Get all albums as an array of Album model
     albums = Album.getAll();
 };
 
@@ -27,7 +26,7 @@ var create = function() {
     //Save album
     album.save();
     
-    //Redirect to index function
+    //Redirect to index
     redirect("/");
 };
 
@@ -40,6 +39,6 @@ var remove = function() {
     //Delete album
     album.delete();
     
-    //Redirect to index function
+    //Redirect to index
     redirect("/");
 };
