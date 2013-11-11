@@ -16,4 +16,6 @@ Govu is a platform featuring single language (Javascript) & databaseless web dev
 
 ## Reviews about Govu ##
 
-[Single layer for web development](https://medium.com/p/8e52071ff1bb)
+* [Single layer for web development](https://medium.com/p/8e52071ff1bb)
+* [Forum Thread: Google+ Javascript Group] (https://plus.google.com/117249381315487624424/posts/SgWdV7wTC4F)
+* [Forum Thread: reddit/r/javascript] (reddit.com/r/javascript/comments/1q9gj0/single_layer_for_web_development_javascript_for/)
