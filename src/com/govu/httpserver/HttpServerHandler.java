@@ -57,6 +57,7 @@ import org.jboss.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
 import org.jboss.netty.handler.codec.http.multipart.InterfaceHttpData;
 import org.jboss.netty.util.CharsetUtil;
 import org.mozilla.javascript.EcmaError;
+import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.JavaScriptException;
 import org.mozilla.javascript.NativeObject;
 
@@ -192,6 +193,8 @@ public class HttpServerHandler extends SimpleChannelHandler {
         } catch (FileNotFoundException ex) {
             Govu.logger.error("FileNotFoundException", ex);
             res = "View not found: " + request.getUri();
+        } catch (EvaluatorException ex) {
+            res = "Syntax error: " + ex.getMessage();
         } catch (IOException ex) {
             Govu.logger.error("IOException", ex);
             res = ex.getMessage();
@@ -285,7 +288,7 @@ public class HttpServerHandler extends SimpleChannelHandler {
             writeFuture.addListener(ChannelFutureListener.CLOSE);
 
         } catch (IOException ex) {
-            java.util.logging.Logger.getLogger(HttpServerHandler.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error(ex);
         }
 
 
@@ -293,7 +296,7 @@ public class HttpServerHandler extends SimpleChannelHandler {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
-        e.getCause().printStackTrace();
+        logger.error(e.getCause());
     }
 
     private static String sanitizeUri(String uri) {
