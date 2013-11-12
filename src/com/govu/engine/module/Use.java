@@ -40,8 +40,10 @@ public class Use extends BaseFunction {
             code += args[0] + ".delete = function(model) { return com.govu.engine.db.DB.delete(model,'" + args[0] + "'); };";
             cx.evaluateString(scope, code, "<cmd>", 0, null);
         } catch (FileNotFoundException ex) {
+            //TODO Fire rhino error
             Logger.getLogger(Use.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
+            //TODO Fire rhino error
             Logger.getLogger(Use.class.getName()).log(Level.SEVERE, null, ex);
         }
         return super.call(cx, scope, thisObj, args); //To change body of generated methods, choose Tools | Templates.

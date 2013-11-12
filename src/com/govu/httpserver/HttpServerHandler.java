@@ -98,9 +98,8 @@ public class HttpServerHandler extends SimpleChannelHandler {
                 }
             } else {
                 try {
-                    render(app, pathString, e);
+                    render(app, pathString,ctx, e);
                 } catch (ControllerNotFoundException ex) {
-                    System.out.println(app.getAbsolutePath()+ pathString);
                     file = new File( app.getAbsolutePath()+ app.getRelativePath(pathString));
                     if (file.exists()) {
                         writeFile(file, ctx, request, e);
@@ -113,7 +112,7 @@ public class HttpServerHandler extends SimpleChannelHandler {
 
     }
 
-    public void render(WebApplication app, String pathString, MessageEvent e) throws ControllerNotFoundException {
+    public void render(WebApplication app, String pathString,ChannelHandlerContext ctx, MessageEvent e) throws ControllerNotFoundException {
         String res = "";
         String redirect = null;
         Renderer renderer = null;
@@ -142,7 +141,6 @@ public class HttpServerHandler extends SimpleChannelHandler {
                         while (decoder.hasNext()) {
                             InterfaceHttpData data = decoder.next();
                             if (data.getHttpDataType() == InterfaceHttpData.HttpDataType.Attribute) {
-                                System.out.println(data.getName() + ": " + ((Attribute) data).getValue());
                                 query.put(data.getName(), ((Attribute) data).getValue());
                             }
                         }
@@ -172,10 +170,11 @@ public class HttpServerHandler extends SimpleChannelHandler {
         } catch (JavaScriptException ex) {
             if (ex.getValue() != null) {
                 NativeObject obj = (NativeObject) ex.getValue();
-                System.out.println(obj.get("error").toString());
                 if (obj.get("error").equals("redirect")) {
                     redirect = obj.get("path").toString();
-                    System.out.println(redirect);
+                } else {
+                    HttpResponseStatus httpRes = new HttpResponseStatus(500, obj.get("msg").toString());
+                    sendError(ctx, httpRes);
                 }
             } else {
                 res = ex.getMessage();

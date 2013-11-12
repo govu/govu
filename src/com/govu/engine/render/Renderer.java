@@ -13,6 +13,9 @@ import com.govu.engine.module.UniqueID;
 import com.govu.engine.module.Use;
 import com.govu.engine.module.cookie.GetCookie;
 import com.govu.engine.module.cookie.SetCookie;
+import com.govu.engine.module.file.FileExists;
+import com.govu.engine.module.file.ReadFile;
+import com.govu.engine.module.file.SaveFile;
 import com.govu.engine.module.session.GetSession;
 import com.govu.engine.module.session.SetSession;
 import com.govu.engine.render.exception.ControllerNotFoundException;
@@ -20,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.HttpCookie;
+import java.sql.Savepoint;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -73,10 +77,16 @@ public class Renderer {
         scope.put("require", scope, new Require(this));
         scope.put("redirect", scope, new Redirect(this));
         scope.put("uniqueID", scope, new UniqueID());
+        
         scope.put("setCookie", scope, new SetCookie(this));
         scope.put("getCookie", scope, new GetCookie(this));
+        
         scope.put("setSession", scope, new SetSession(this));
         scope.put("getSession", scope, new GetSession(this));
+
+        scope.put("readFile", scope, new ReadFile(this));
+        scope.put("saveFile", scope, new SaveFile(this));
+        scope.put("fileExists", scope, new FileExists(this));
 
         Object result = cx.evaluateString(scope, code.toString(), "<cmd>", 0, null);
         Context.exit();

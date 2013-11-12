@@ -28,7 +28,7 @@ import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
  */
 public class Govu {
 
-    public static String VERSION = "0.0.1";
+    public static String VERSION = "0.0.2";
     
     
     public static String root;
@@ -55,8 +55,6 @@ public class Govu {
         logger.debug("Staring Govu Server "+ VERSION +"...");
 
         readProperties();
-
-        
 
         File webDir = new File(webRoot);
         if (!webDir.exists()) {
@@ -109,7 +107,7 @@ public class Govu {
 
             //Read configuration
             if (props.containsKey("webRoot")) {
-                String tmpRoot = props.getProperty("webRoot");
+                webRoot = props.getProperty("webRoot");
             }
             logger.debug("Webroot: " + webRoot);
             
@@ -132,6 +130,12 @@ public class Govu {
                             props.getProperty("web." + name + ".domain")));
                 }
             }
+            
+            if (apps.isEmpty()) {
+                apps.add(new WebApplication("base","/",null));
+            }
+            
+            
         }
     }
 }

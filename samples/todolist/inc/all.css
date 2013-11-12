@@ -1,0 +1,92 @@
+.login_panel {
+    margin-top: 50px;
+    width: 250px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.register_panel {
+    margin-top: 50px;
+    width: 250px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+.alert_div { 
+    width: 450px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.searchitem_input { 
+    height: 34px !important;
+    margin-top: 0px !important;
+}
+
+#new_list{ 
+    height: 34px !important;
+    margin-top: 0px !important;
+    width: 300px;
+}
+
+.accordion-group{
+    width: 695px;
+}
+
+.todoListCss{
+    display: inline-block !important;
+    width: 600px;
+}
+
+.todoListDel{
+    margin-left: 3px;
+}
+
+.todoListEdit{
+    margin-left: 3px;
+}
+
+.todoListItemCss{
+    width: 100%;
+    height: 33px;
+}
+
+.todoListItemDel{
+    float: right;
+    margin-left: 3px;
+}
+
+.todoListItemEdit{
+    float: right;
+    margin-left: 3px;
+}
+
+#btnAddList{
+    margin-top: -10px;
+}
+
+.icon-white {
+    background-image: url("glyphicons-halflings-white.png");
+}
+.icon-trash {
+    background-position: -456px 0;
+}
+.icon-pencil{
+     background-position: 0 -72px;
+}
+
+.newlist_item_div{
+   margin-left: 30px; 
+}
+
+.newlist_item_inpt{
+    height: 34px !important;
+    margin-top: 0px !important;
+    width: 250px;
+}
+
+.btnAddListItem{
+    margin-left: 5px;
+    margin-top: -10px;
+}
