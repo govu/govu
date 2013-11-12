@@ -122,7 +122,7 @@ public class Govu {
             for (Iterator<Object> it = props.keySet().iterator(); it.hasNext();) {
                 String key = it.next().toString();
                 if (key.startsWith("web.") && key.endsWith(".path")) {
-                    String name = key.substring(key.indexOf(".")+1 , key.lastIndexOf(".", key.indexOf(".")+1));
+                    String name = key.substring( key.indexOf(".")+1 , key.lastIndexOf("."));
                     logger.info("> starting web application: " + name);
                     apps.add(new WebApplication(
                             name,
