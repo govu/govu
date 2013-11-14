@@ -95,7 +95,7 @@ public class HttpServerHandler extends SimpleChannelHandler {
                 if (file.exists()) {
                     writeFile(file, ctx, request, e);
                 } else {
-                    sendError(ctx, NOT_FOUND);
+                    sendError(ctx, NOT_FOUND,"1");
                 }
             } else {
                 try {
@@ -105,7 +105,7 @@ public class HttpServerHandler extends SimpleChannelHandler {
                     if (file.exists()) {
                         writeFile(file, ctx, request, e);
                     } else {
-                        sendError(ctx, NOT_FOUND);
+                        sendError(ctx, NOT_FOUND,"2");
                     }
                 }
             }
@@ -175,7 +175,7 @@ public class HttpServerHandler extends SimpleChannelHandler {
                     redirect = obj.get("path").toString();
                 } else {
                     HttpResponseStatus httpRes = new HttpResponseStatus(500, obj.get("msg").toString());
-                    sendError(ctx, httpRes);
+                    sendError(ctx, httpRes,"0");
                 }
             } else {
                 res = ex.getMessage();
@@ -194,6 +194,7 @@ public class HttpServerHandler extends SimpleChannelHandler {
             Govu.logger.error("FileNotFoundException", ex);
             res = "View not found: " + request.getUri();
         } catch (EvaluatorException ex) {
+            Govu.logger.error("EvaluatorException", ex);
             res = "Syntax error: " + ex.getMessage();
         } catch (IOException ex) {
             Govu.logger.error("IOException", ex);
@@ -253,7 +254,7 @@ public class HttpServerHandler extends SimpleChannelHandler {
             try {
                 raf = new RandomAccessFile(file, "r");
             } catch (FileNotFoundException fnfe) {
-                sendError(ctx, NOT_FOUND);
+                sendError(ctx, NOT_FOUND,"f");
                 return;
             }
             long fileLength = raf.length();
@@ -326,11 +327,11 @@ public class HttpServerHandler extends SimpleChannelHandler {
         return System.getProperty("user.dir") + File.separator + uri;
     }
 
-    private static void sendError(ChannelHandlerContext ctx, HttpResponseStatus status) {
+    private static void sendError(ChannelHandlerContext ctx, HttpResponseStatus status,String code) {
         HttpResponse response = new DefaultHttpResponse(HTTP_1_1, status);
         response.setHeader(CONTENT_TYPE, "text/plain; charset=UTF-8");
         response.setContent(ChannelBuffers.copiedBuffer(
-                "Failure: " + status.toString() + "\r\n",
+                "Failure: " + status.toString() + "."+ code+ "\r\n",
                 CharsetUtil.UTF_8));
 
         ctx.getChannel().write(response).addListener(ChannelFutureListener.CLOSE);

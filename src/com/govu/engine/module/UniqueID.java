@@ -4,7 +4,6 @@
  */
 package com.govu.engine.module;
 
-import java.io.StringWriter;
 import java.util.UUID;
 import org.mozilla.javascript.BaseFunction;
 import org.mozilla.javascript.Context;

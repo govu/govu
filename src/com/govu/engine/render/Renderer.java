@@ -9,6 +9,7 @@ import com.govu.application.WebApplication;
 import com.govu.engine.module.Print;
 import com.govu.engine.module.Redirect;
 import com.govu.engine.module.Require;
+import com.govu.engine.module.Shell;
 import com.govu.engine.module.UniqueID;
 import com.govu.engine.module.Use;
 import com.govu.engine.module.cookie.GetCookie;
@@ -23,7 +24,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.HttpCookie;
-import java.sql.Savepoint;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -88,7 +88,9 @@ public class Renderer {
         scope.put("saveFile", scope, new SaveFile(this));
         scope.put("fileExists", scope, new FileExists(this));
 
-        Object result = cx.evaluateString(scope, code.toString(), "<cmd>", 0, null);
+        scope.put("shell", scope, new Shell());
+        
+        cx.evaluateString(scope, code.toString(), "<cmd>", 0, null);
         Context.exit();
     }
 

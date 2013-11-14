@@ -8,6 +8,8 @@ import com.govu.engine.db.DB;
 import com.govu.engine.db.db4o.DB4OProvider;
 import com.govu.httpserver.HttpServerPipelineFactory;
 import com.govu.application.WebApplication;
+import com.govu.command.DeleteCommand;
+import com.govu.command.DeployCommand;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -29,8 +31,6 @@ import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 public class Govu {
 
     public static String VERSION = "0.0.2";
-    
-    
     public static String root;
     public static String dbRoot;
     public static String webRoot;
@@ -43,7 +43,19 @@ public class Govu {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        Govu govu = new Govu();
+        if (args.length > 0) {
+            String command = args[0].toLowerCase();
+            if (command.equals("deploy")) {
+                new DeployCommand().process(args);
+            } else if (command.equals("delete")) {
+                new DeleteCommand().process(args);
+            } else {
+                System.out.println("Unknown govu command: " + args[0]);
+            }
+        } else {
+            //Start govu web server
+            Govu govu = new Govu();
+        }
     }
 
     public Govu() {
@@ -52,7 +64,7 @@ public class Govu {
         root = System.getProperty("user.dir");
         dbRoot = root + "/db";
         webRoot = root + "/web";
-        logger.debug("Staring Govu Server "+ VERSION +"...");
+        logger.debug("Staring Govu Server " + VERSION + "...");
 
         readProperties();
 
@@ -70,7 +82,7 @@ public class Govu {
 
         //Init Database Provider
         db = new DB(new DB4OProvider());
-        
+
         //Init http server
         ServerBootstrap restBootStrap = new ServerBootstrap(new NioServerSocketChannelFactory(Executors.newCachedThreadPool(), Executors.newCachedThreadPool()));
         restBootStrap.setOption("child.tcpNoDelay", true);
@@ -79,13 +91,12 @@ public class Govu {
 
         logger.debug("Govu started successfully. Happy coding!");
     }
-    
-    public static WebApplication getWebApp(String host,String path) {
+
+    public static WebApplication getWebApp(String host, String path) {
         for (Iterator<WebApplication> it = apps.iterator(); it.hasNext();) {
             WebApplication app = it.next();
-            if ( (app.getDomain()!=null && app.getDomain().equals(host)) ||
-                (app.getDomain() == null && path.startsWith(app.getRootPath()))
-                   ) {
+            if ((app.getDomain() != null && app.getDomain().equals(host))
+                    || (app.getDomain() == null && path.startsWith(app.getRootPath()))) {
                 return app;
             }
         }
@@ -110,7 +121,7 @@ public class Govu {
                 webRoot = props.getProperty("webRoot");
             }
             logger.debug("Webroot: " + webRoot);
-            
+
             if (props.containsKey("port")) {
                 try {
                     PORT = Integer.parseInt(props.getProperty("port"));
@@ -122,7 +133,7 @@ public class Govu {
             for (Iterator<Object> it = props.keySet().iterator(); it.hasNext();) {
                 String key = it.next().toString();
                 if (key.startsWith("web.") && key.endsWith(".path")) {
-                    String name = key.substring( key.indexOf(".")+1 , key.lastIndexOf("."));
+                    String name = key.substring(key.indexOf(".") + 1, key.lastIndexOf("."));
                     logger.info("> starting web application: " + name);
                     apps.add(new WebApplication(
                             name,
@@ -130,12 +141,12 @@ public class Govu {
                             props.getProperty("web." + name + ".domain")));
                 }
             }
-            
+
             if (apps.isEmpty()) {
-                apps.add(new WebApplication("base","/",null));
+                apps.add(new WebApplication("base", "/", null));
             }
-            
-            
+
+
         }
     }
 }

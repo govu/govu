@@ -50,16 +50,14 @@ public class WebApplication {
         this.domain = domain;
     }
 
-   
-
     public String getRelativePath(String path) {
-        String relativePath = null;
+        String relativePath;
         if (getDomain()!= null) {
             relativePath = path;
         } else {
             relativePath = path.substring(getRootPath().length());
-            if (relativePath.equals("")) {
-                relativePath = "/";
+            if (!relativePath.startsWith("/")) {
+                relativePath = "/" + relativePath;
             }
         }
         return relativePath;
