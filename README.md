@@ -15,7 +15,7 @@ Govu is a platform featuring single language (Javascript) & databaseless web dev
 * [Commands](https://github.com/easylibs/govu/wiki/Commands)
 
 ## Samples ##
-* [Online Snake Game](https://github.com/easylibs/govu/wiki/Online-Snake-Game-under-90-lines-of-Javascript)
+* [Online Snake Game](http://snakegame.codegovu.com)
 
 ## Reviews about Govu ##
 
