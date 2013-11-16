@@ -11,7 +11,10 @@ public class HttpServerPipelineFactory implements ChannelPipelineFactory {
     @Override
     public ChannelPipeline getPipeline() throws Exception {
         ChannelPipeline pipeline = pipeline();
-        pipeline.addLast("decoder", new HttpRequestDecoder());
+        
+        
+        
+        pipeline.addLast("decoder", new HttpRequestDecoder(4096,8192,10485760));
         pipeline.addLast("encoder", new HttpResponseEncoder());
         pipeline.addLast("handler", new HttpServerHandler());
         return pipeline;

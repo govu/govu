@@ -30,7 +30,7 @@ public class ReadFile extends BaseFunction {
     @Override
     public Object call(Context cx, Scriptable scope, Scriptable thisObj, Object[] args) {
         try {
-            return FileUtils.readFileToString(new File(renderer.getApp().getAbsolutePath() + args[0]), "UTF-8");
+            return FileUtils.readFileToString(new File(renderer.getApp().getAbsolutePath()+"/"  + args[0]), "UTF-8");
         } catch (FileNotFoundException ex) {
             cx.evaluateString(scope, "throw { error: \"fileNotFound\", msg: \""+ ex.getMessage() +"\" };", "<cmd>", 0, null);
         } catch (IOException ex) {

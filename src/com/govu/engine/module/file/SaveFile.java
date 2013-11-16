@@ -32,7 +32,7 @@ public class SaveFile extends BaseFunction {
     @Override
     public Object call(Context cx, Scriptable scope, Scriptable thisObj, Object[] args) {
         try {
-            String filePath = renderer.getApp().getAbsolutePath() + args[0].toString();
+            String filePath = renderer.getApp().getAbsolutePath()+"/"  + args[0].toString();
 
             File file = new File(filePath);
             if (!file.exists()) {

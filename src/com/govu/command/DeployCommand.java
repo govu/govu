@@ -7,6 +7,7 @@ package com.govu.command;
 import com.govu.util.ZipHelper;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ public class DeployCommand {
     public void process(String[] args) {
         Logger.getLogger("org.apache.http").setLevel(org.apache.log4j.Level.OFF);
         if (args.length < 3) {
+
             System.out.println("Invalid arguments for deploy");
         }
         try {
@@ -41,10 +43,22 @@ public class DeployCommand {
             String domain = args[2];
             String password = args.length > 3 ? args[3] : null;
 
+            System.out.println("Path: " + path);
+            System.out.println("Domain: " + domain);
+            if (password != null) {
+                System.out.println("Password: " + password);
+            }
+
+            File zipDir = new File(path);
+            if (!zipDir.exists()) {
+                System.out.println("Path does not exist!");
+                return;
+            }
+
             ZipHelper zipHelper = new ZipHelper();
             ByteArrayOutputStream out = zipHelper.zipDir(path);
             String zip = Base64.encodeBase64String(out.toByteArray());
-            
+
             HttpClient client = new DefaultHttpClient();
             HttpPost post = new HttpPost(DeployHost + "/deploy");
             ArrayList<NameValuePair> postParameters = new ArrayList<>();
@@ -58,7 +72,7 @@ public class DeployCommand {
             HttpResponse res = client.execute(post);
             BufferedReader rd = new BufferedReader(new InputStreamReader(res.getEntity().getContent()));
             String deployResponse = rd.readLine();
-            
+
             switch (deployResponse) {
                 case "ok":
                     System.out.println("Deployment is successful.");
@@ -73,7 +87,6 @@ public class DeployCommand {
         } catch (IOException ex) {
             System.out.println("Error while compressing web app:" + ex.getMessage());
         }
-
 
     }
 }

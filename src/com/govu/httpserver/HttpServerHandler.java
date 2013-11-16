@@ -8,10 +8,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpCookie;
 import java.net.URISyntaxException;
-import java.net.URLDecoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -24,7 +22,6 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.logging.Level;
-import javax.activation.MimetypesFileTypeMap;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.log4j.Logger;
@@ -71,11 +68,10 @@ public class HttpServerHandler extends SimpleChannelHandler {
 
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) {
-
-        HttpRequest request;
         
-
-        request = (HttpRequest) e.getMessage();
+        
+        
+        HttpRequest request = (HttpRequest) e.getMessage();
         logger.info(ctx.getChannel().getRemoteAddress().toString() + ": " + request.getUri());
         String pathString = request.getUri();
 

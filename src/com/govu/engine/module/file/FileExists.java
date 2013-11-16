@@ -30,6 +30,6 @@ public class FileExists extends BaseFunction {
 
     @Override
     public Object call(Context cx, Scriptable scope, Scriptable thisObj, Object[] args) {
-        return new File(renderer.getApp().getAbsolutePath() + args[0]).exists();
+        return new File(renderer.getApp().getAbsolutePath()+"/" + args[0]).exists();
     }
 }

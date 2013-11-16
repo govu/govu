@@ -30,7 +30,7 @@ import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
  */
 public class Govu {
 
-    public static String VERSION = "0.0.2";
+    public static String VERSION = "0.0.3";
     public static String root;
     public static String dbRoot;
     public static String webRoot;
@@ -43,6 +43,7 @@ public class Govu {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        
         if (args.length > 0) {
             String command = args[0].toLowerCase();
             if (command.equals("deploy")) {
