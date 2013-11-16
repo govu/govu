@@ -1,44 +1,27 @@
-//Use Album class which is located in /Model/Album.js
-use("Album"); 
-
-//Parameters set by submitted form at index.html
-var id;
-var artist;
-var title;
-
-//List of albums populated when index is called
-var albums;
-
-//Index function called on page load
+use("Player");
+var displayName;
+var score;
+var leaderBoard;
 var index = function() {
-    //Get all albums as an array of Album model
-    albums = Album.getAll();
+    displayName = getCookie("displayName");
+    leaderBoard = Player.getAll();
+    leaderBoard.sort(function(p1, p2) {
+        return p2.score - p1.score;
+    });
 };
-
-//Creates new album
-var create = function() {
-    //Create our new album
-    var album = new Album();
-    //Set parameters
-    album.id = uniqueID(); 
-    album.artist = artist;
-    album.title = title;
-    //Save album
-    album.save();
-    
-    //Redirect to index
-    redirect("/");
-};
-
-//Removes album
-var remove = function() {
-    //Create album for reference to delete
-    var album = new Album();
-    //Set album id to delete
-    album.id = id;
-    //Delete album
-    album.delete();
-    
-    //Redirect to index
+var save = function() {
+    var player = new Player();
+    player.displayName = displayName;
+    var existingPlayer = Player.get(player);
+    if (existingPlayer!=null) { //Update score
+        if (existingPlayer.score<parseInt(score)) {
+            existingPlayer.score = parseInt(score);
+            existingPlayer.save();
+        }
+    } else { //New user
+        player.score = parseInt(score);
+        player.save();
+    }
+    setCookie("displayName",displayName);
     redirect("/");
 };

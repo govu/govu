@@ -1,0 +1,68 @@
+body,input {
+    font-family: "freight-sans-pro","Myriad Pro","Lucida Grande","Lucida Sans Unicode","Lucida Sans",Geneva,Verdana,sans-serif;
+    font-size: 25px;
+}
+
+ul {
+    list-style: none;
+    margin:0;
+    padding:0;
+    margin-bottom:10px;
+}
+
+li {
+    padding:4px;
+    border-top-style: solid 1px silver;
+}
+
+li.odd {
+    background-color: #f3f3f3;
+}
+
+.score {
+    float:right;
+    margin-right:5px;
+}
+
+.container {
+    margin:50px auto;
+    width:450px;
+    height: 480px;
+}
+
+.btn {
+    padding: 14px 26px;
+    font-size: 20px;
+    line-height: 100%;
+    text-shadow: 0 1px rgba(0, 0, 0, 0.4);
+    color: white;
+    vertical-align: middle;
+    text-align: center;
+    font-weight: bold;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    background-color: powderblue;
+    border-color: #fff;
+    outline: 0 none;
+}
+
+#gameOver {
+    text-align: center;
+}
+
+input {
+    text-align: center;
+    padding:7px;
+    font-weight: bold;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    margin:8px 0px 5px 0px;
+}
+
+.tweet {
+    text-align: center;width:400px; 
+    margin:0px auto;
+    margin-top:20px;
+}

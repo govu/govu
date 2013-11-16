@@ -1,35 +1,38 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
     <head>
-        <title>Album List</title>
-    </head>
-
-    <body>
-        <h2>Create new album</h2>
-        <!-- 
-        When submitted, this form triggers create method in the index controller (index.js)
-        And also sets artist & title properties
-        -->
-        <form method="post" action="/index/create">
-            
-            Artist: <input name="artist"/><br/>
-            Title: <input name="title" /><br/>
-            <input type="submit"/>
-        </form>
-
-        <hr/>
-        <h2>Album List</h2>
+    <title>Online Snake Game under 90 lines of Javascript - CodeGovu.com</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="/static/snake.css" />
+</head>
+<body>
+<div class="container">
+    <div id="welcome" style="display: block;">
         <ul>
-            <!-- albums array is populated by index controller (index.js) on page load -->
             <% 
-            for (var i=0;i< albums.length;i++) { 
-            var album = albums[i];
+                for (var i=0;i< Math.min(10, leaderBoard.length);i++) { 
+                var player = leaderBoard[i];
+                if (player.displayName!="") {
             %>
-            <li>
-                <% print(album.title); %> (<% print(album.artist); %>)
-                <a href="/index/remove?id=<% print(album.id); %>">[remove]</a>
+            <li class="<% print(i %2 ==0 ? "odd" : ""); %>">
+                <% print(player.displayName);%>
+                <span class="score"><% print(player.score.toFixed(0));%></span>
             </li>
-            <% } %>
+            <% }} %>
         </ul>
-    </body>
+        <input type="button" class="btn" onClick="document.getElementById('canvas').style.display='block';document.getElementById('welcome').style.display='none';start();" value="start"/>
+    </div>
+    <canvas id="canvas" style="display: none;" width="450" height="480"></canvas>
+    <div id="gameOver" style="display:none;">
+        <form method="post" action="/index/save">
+            <h1>Game Over!</h1><br/><br/>
+            Enter your name:
+            <input type="text" name="displayName" value="<% print(displayName!=null ? displayName : ""); %>"/><br/>
+            <input type="hidden" name="score" id="score"/>
+            <input type="submit" class="btn" value="submit"/>
+        </form>
+    </div>
+</div>
+<script type="text/javascript" src="/static/snake.js"></script>
+</body>
 </html>
