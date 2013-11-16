@@ -68,12 +68,13 @@ public class HttpServerHandler extends SimpleChannelHandler {
     public HttpServerHandler() {
         logger = Logger.getLogger("accessLog");
     }
-    private HttpRequest request;
-    private HttpResponse response;
-    private ChannelFuture future;
 
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) {
+
+        HttpRequest request;
+        
+
         request = (HttpRequest) e.getMessage();
         logger.info(ctx.getChannel().getRemoteAddress().toString() + ": " + request.getUri());
         String pathString = request.getUri();
@@ -81,10 +82,10 @@ public class HttpServerHandler extends SimpleChannelHandler {
         if (pathString.toLowerCase().startsWith("/controller/")
                 || pathString.toLowerCase().startsWith("/model/")
                 || pathString.toLowerCase().startsWith("/view/")) {
-            response = new DefaultHttpResponse(HTTP_1_1, FORBIDDEN);
+            HttpResponse response = new DefaultHttpResponse(HTTP_1_1, FORBIDDEN);
             response.setHeader(CONTENT_TYPE, "text/html; charset=UTF-8");
             response.setContent(ChannelBuffers.copiedBuffer("Forbidden", CharsetUtil.UTF_8));
-            future = e.getChannel().write(response);
+            ChannelFuture future = e.getChannel().write(response);
             future.addListener(ChannelFutureListener.CLOSE);
         } else {
             String host = request.getHeader("host");
@@ -95,17 +96,17 @@ public class HttpServerHandler extends SimpleChannelHandler {
                 if (file.exists()) {
                     writeFile(file, ctx, request, e);
                 } else {
-                    sendError(ctx, NOT_FOUND,"1");
+                    sendError(ctx, NOT_FOUND, "1");
                 }
             } else {
                 try {
-                    render(app, pathString,ctx, e);
+                    render(request, app, pathString, ctx, e);
                 } catch (ControllerNotFoundException ex) {
-                    file = new File( app.getAbsolutePath()+ app.getRelativePath(pathString));
+                    file = new File(app.getAbsolutePath() + app.getRelativePath(pathString));
                     if (file.exists()) {
                         writeFile(file, ctx, request, e);
                     } else {
-                        sendError(ctx, NOT_FOUND,"2");
+                        sendError(ctx, NOT_FOUND, "2");
                     }
                 }
             }
@@ -113,18 +114,19 @@ public class HttpServerHandler extends SimpleChannelHandler {
 
     }
 
-    public void render(WebApplication app, String pathString,ChannelHandlerContext ctx, MessageEvent e) throws ControllerNotFoundException {
+    public void render(HttpRequest request, WebApplication app, String pathString, ChannelHandlerContext ctx, MessageEvent e) throws ControllerNotFoundException {
         String res = "";
         String redirect = null;
+        HttpResponse response;
         Renderer renderer = null;
+
+
         try {
             String relativePath = app.getRelativePath(pathString);
             if (relativePath.equals("/")) {
                 relativePath = "/index";
             }
             URIBuilder uri = new URIBuilder(relativePath);
-
-
             String[] path = uri.getPath().split("/");
 
             if (path.length > 1) {
@@ -158,8 +160,8 @@ public class HttpServerHandler extends SimpleChannelHandler {
                     cookies = decoder.decode(value);
                 }
 
-
-                renderer = new Renderer(app,type, method, query, cookies);
+                renderer = new Renderer(app, type, method, query, cookies);
+                renderer.render();
                 res = renderer.getResponse();
 
             } else {
@@ -175,7 +177,7 @@ public class HttpServerHandler extends SimpleChannelHandler {
                     redirect = obj.get("path").toString();
                 } else {
                     HttpResponseStatus httpRes = new HttpResponseStatus(500, obj.get("msg").toString());
-                    sendError(ctx, httpRes,"0");
+                    sendError(ctx, httpRes, "0");
                 }
             } else {
                 res = ex.getMessage();
@@ -201,28 +203,32 @@ public class HttpServerHandler extends SimpleChannelHandler {
             res = ex.getMessage();
         }
 
-
         if (redirect != null) {
             response = new DefaultHttpResponse(HTTP_1_1, FOUND);
-            response.setHeader("Location", redirect);
+            setCookies(renderer,response);
+            response.addHeader("Location", redirect);
         } else {
             response = new DefaultHttpResponse(HTTP_1_1, OK);
             response.setHeader(CONTENT_TYPE, "text/html; charset=UTF-8");
             response.setContent(ChannelBuffers.copiedBuffer(res, CharsetUtil.UTF_8));
+            setCookies(renderer,response);
         }
 
+
+
+        ChannelFuture future = e.getChannel().write(response);
+        future.addListener(ChannelFutureListener.CLOSE);
+    }
+
+    private void setCookies(Renderer renderer, HttpResponse response) {
         if (renderer != null) {
             for (Iterator<HttpCookie> it = renderer.getCookieEncoder().iterator(); it.hasNext();) {
                 HttpCookie httpCookie = it.next();
                 CookieEncoder encoder = new CookieEncoder(false);
                 encoder.addCookie(httpCookie.getName(), httpCookie.getValue());
-
-                response.setHeader("Set-Cookie", httpCookie.toString());
+                response.addHeader("Set-Cookie", httpCookie.toString()+"; path=/");
             }
         }
-
-        future = e.getChannel().write(response);
-        future.addListener(ChannelFutureListener.CLOSE);
     }
     public static final String HTTP_DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss zzz";
     public static final String HTTP_DATE_GMT_TIMEZONE = "GMT";
@@ -254,7 +260,7 @@ public class HttpServerHandler extends SimpleChannelHandler {
             try {
                 raf = new RandomAccessFile(file, "r");
             } catch (FileNotFoundException fnfe) {
-                sendError(ctx, NOT_FOUND,"f");
+                sendError(ctx, NOT_FOUND, "f");
                 return;
             }
             long fileLength = raf.length();
@@ -300,38 +306,12 @@ public class HttpServerHandler extends SimpleChannelHandler {
         logger.error(e.getCause());
     }
 
-    private static String sanitizeUri(String uri) {
-        // Decode the path.
-        try {
-            uri = URLDecoder.decode(uri, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            try {
-                uri = URLDecoder.decode(uri, "ISO-8859-1");
-            } catch (UnsupportedEncodingException e1) {
-                throw new Error();
-            }
-        }
 
-        // Convert file separators.
-        uri = uri.replace('/', File.separatorChar);
-
-        // Simplistic dumb security check.
-        // You will have to do something serious in the production environment.
-        if (uri.contains(File.separator + '.')
-                || uri.contains('.' + File.separator)
-                || uri.startsWith(".") || uri.endsWith(".")) {
-            return null;
-        }
-
-        // Convert to absolute path.
-        return System.getProperty("user.dir") + File.separator + uri;
-    }
-
-    private static void sendError(ChannelHandlerContext ctx, HttpResponseStatus status,String code) {
+    private static void sendError(ChannelHandlerContext ctx, HttpResponseStatus status, String code) {
         HttpResponse response = new DefaultHttpResponse(HTTP_1_1, status);
         response.setHeader(CONTENT_TYPE, "text/plain; charset=UTF-8");
         response.setContent(ChannelBuffers.copiedBuffer(
-                "Failure: " + status.toString() + "."+ code+ "\r\n",
+                "Failure: " + status.toString() + "." + code + "\r\n",
                 CharsetUtil.UTF_8));
 
         ctx.getChannel().write(response).addListener(ChannelFutureListener.CLOSE);
@@ -385,14 +365,4 @@ public class HttpServerHandler extends SimpleChannelHandler {
         response.setHeader(LAST_MODIFIED, dateFormatter.format(new Date(fileToCache.lastModified())));
     }
 
-    /**
-     * Sets the content type header for the HTTP Response
-     *
-     * @param response HTTP response
-     * @param file file to extract content type
-     */
-    private static void setContentTypeHeader(HttpResponse response, File file) {
-        MimetypesFileTypeMap mimeTypesMap = new MimetypesFileTypeMap();
-        response.setHeader(CONTENT_TYPE, mimeTypesMap.getContentType(file.getPath()));
-    }
 }

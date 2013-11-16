@@ -45,15 +45,25 @@ public class Renderer {
     private Set<Cookie> cookies;
     public static HashMap<String, HashMap<String, Object>> sessionContainer = new ActivatableHashMap<>();
     private WebApplication app;
+    private String type;
+    private String method;
+    private HashMap<String, String> query;
 
     public Renderer() {
     }
 
-    public Renderer(WebApplication app, String type, String method, HashMap<String, String> query, Set<Cookie> cookies) throws IOException, ControllerNotFoundException {
+    public Renderer(WebApplication app, String type, String method, HashMap<String, String> query, Set<Cookie> cookies)  {
         this.app = app;
+        this.type=type;
+        this.method = method;
         this.newCookies = new HashSet<>();
         this.writer = new StringWriter();
         this.cookies = cookies;
+        this.query = query;
+        
+    }
+
+    public void render() throws IOException, ControllerNotFoundException {
         File controllerFile = new File(app.getAbsolutePath()+ "/Controller/" + type + ".js");
         if (!controllerFile.exists()) {
             throw new ControllerNotFoundException(type);
@@ -93,7 +103,7 @@ public class Renderer {
         cx.evaluateString(scope, code.toString(), "<cmd>", 0, null);
         Context.exit();
     }
-
+    
     public String escape(String code) {
         code = code.replaceAll("\r", "\\\\r");
         code = code.replaceAll("\n", "\\\\n");
@@ -202,4 +212,6 @@ public class Renderer {
     public WebApplication getApp() {
         return app;
     }
+
+    
 }

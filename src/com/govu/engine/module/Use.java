@@ -35,7 +35,7 @@ public class Use extends BaseFunction {
             code += args[0] + ".prototype.save = function() { com.govu.engine.db.DB.saveObj(this,'" + args[0] + "') };";
             code += args[0] + ".prototype.delete = function() {com.govu.engine.db.DB.deleteObj(this,'" + args[0] + "') };";
             code += args[0] + ".getAll = function() { return com.govu.engine.db.DB.getAll("+ args[0] +",'" + args[0] + "'); };";
-            code += args[0] + ".get = function(model) { return com.govu.engine.db.DB.find(model,'" + args[0] + "'); };";
+            code += args[0] + ".get = function(model) { return com.govu.engine.db.DB.get(model,'" + args[0] + "'); };";
             code += args[0] + ".search = function(model) { return com.govu.engine.db.DB.search(model,"+ args[0] +",'" + args[0] + "'); };";
             code += args[0] + ".delete = function(model) { return com.govu.engine.db.DB.delete(model,'" + args[0] + "'); };";
             cx.evaluateString(scope, code, "<cmd>", 0, null);
