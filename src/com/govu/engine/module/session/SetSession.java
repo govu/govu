@@ -23,7 +23,7 @@ public class SetSession extends BaseFunction {
 
     @Override
     public Object call(Context cx, Scriptable scope, Scriptable thisObj, Object[] args) {
-        renderer.setSession(args[0].toString(),args[1]);
+        renderer.getApp().setSession(args[0].toString(),args[1]);
         return super.call(cx, scope, thisObj, args);
     }
 

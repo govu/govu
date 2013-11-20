@@ -156,7 +156,8 @@ public class HttpServerHandler extends SimpleChannelHandler {
                     cookies = decoder.decode(value);
                 }
 
-                renderer = new Renderer(app, type, method, query, cookies);
+                app.setCookies(cookies);
+                renderer = new Renderer(app, type, method, query);
                 renderer.render();
                 res = renderer.getResponse();
 
@@ -218,7 +219,7 @@ public class HttpServerHandler extends SimpleChannelHandler {
 
     private void setCookies(Renderer renderer, HttpResponse response) {
         if (renderer != null) {
-            for (Iterator<HttpCookie> it = renderer.getCookieEncoder().iterator(); it.hasNext();) {
+            for (Iterator<HttpCookie> it = renderer.getApp().getCookieEncoder().iterator(); it.hasNext();) {
                 HttpCookie httpCookie = it.next();
                 CookieEncoder encoder = new CookieEncoder(false);
                 encoder.addCookie(httpCookie.getName(), httpCookie.getValue());

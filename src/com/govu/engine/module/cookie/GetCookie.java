@@ -23,7 +23,7 @@ public class GetCookie extends BaseFunction {
 
     @Override
     public Object call(Context cx, Scriptable scope, Scriptable thisObj, Object[] args) {
-        return renderer.getCookie(args[0].toString());
+        return renderer.getApp().getCookie(args[0].toString());
     }
 
     

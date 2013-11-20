@@ -11,13 +11,10 @@ import com.govu.application.WebApplication;
 import com.govu.command.DeleteCommand;
 import com.govu.command.DeployCommand;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import org.apache.log4j.Logger;
@@ -30,20 +27,20 @@ import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
  */
 public class Govu {
 
-    public static String VERSION = "0.0.3";
+    public static String VERSION = "0.0.4";
     public static String root;
     public static String dbRoot;
     public static String webRoot;
     public static Logger logger;
     public static int PORT;
     public static Set<WebApplication> apps = new HashSet<>();
+    public static Config config;
     private DB db;
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        
         if (args.length > 0) {
             String command = args[0].toLowerCase();
             if (command.equals("deploy")) {
@@ -67,7 +64,13 @@ public class Govu {
         webRoot = root + "/web";
         logger.debug("Staring Govu Server " + VERSION + "...");
 
-        readProperties();
+        try {
+            config = new Config();
+            config.readProperties();
+        } catch (IOException | InterruptedException ex) {
+            logger.error("Error reading config file", ex);
+        }
+
 
         File webDir = new File(webRoot);
         if (!webDir.exists()) {
@@ -85,10 +88,10 @@ public class Govu {
         db = new DB(new DB4OProvider());
 
         //Init http server
-        ServerBootstrap restBootStrap = new ServerBootstrap(new NioServerSocketChannelFactory(Executors.newCachedThreadPool(), Executors.newCachedThreadPool()));
-        restBootStrap.setOption("child.tcpNoDelay", true);
-        restBootStrap.setPipelineFactory(new HttpServerPipelineFactory());
-        restBootStrap.bind(new InetSocketAddress(PORT));
+        ServerBootstrap httpBootStrap = new ServerBootstrap(new NioServerSocketChannelFactory(Executors.newCachedThreadPool(), Executors.newCachedThreadPool()));
+        httpBootStrap.setOption("child.tcpNoDelay", true);
+        httpBootStrap.setPipelineFactory(new HttpServerPipelineFactory());
+        httpBootStrap.bind(new InetSocketAddress(PORT));
 
         logger.debug("Govu started successfully. Happy coding!");
     }
@@ -103,51 +106,14 @@ public class Govu {
         }
         return null;
     }
-
-    private void readProperties() {
-        File propsFile = new File(root + "/govu.properties");
-        if (propsFile.exists()) {
-            logger.info("Loading govu.properties");
-            Properties props = new Properties();
-            try {
-                props.load(new FileReader(propsFile));
-            } catch (FileNotFoundException ex) {
-                logger.error("Error reading govu.properties", ex);
-            } catch (IOException ex) {
-                logger.error("Error reading govu.properties", ex);
+    
+    public static WebApplication getWebApp(String name) {
+        for (Iterator<WebApplication> it = apps.iterator(); it.hasNext();) {
+            WebApplication app = it.next();
+            if (app.getName().equals(name)){
+                return app;
             }
-
-            //Read configuration
-            if (props.containsKey("webRoot")) {
-                webRoot = props.getProperty("webRoot");
-            }
-            logger.debug("Webroot: " + webRoot);
-
-            if (props.containsKey("port")) {
-                try {
-                    PORT = Integer.parseInt(props.getProperty("port"));
-                } catch (Exception ex) {
-                }
-            }
-
-            //Read apps
-            for (Iterator<Object> it = props.keySet().iterator(); it.hasNext();) {
-                String key = it.next().toString();
-                if (key.startsWith("web.") && key.endsWith(".path")) {
-                    String name = key.substring(key.indexOf(".") + 1, key.lastIndexOf("."));
-                    logger.info("> starting web application: " + name);
-                    apps.add(new WebApplication(
-                            name,
-                            props.getProperty(key),
-                            props.getProperty("web." + name + ".domain")));
-                }
-            }
-
-            if (apps.isEmpty()) {
-                apps.add(new WebApplication("base", "/", null));
-            }
-
-
         }
+        return null;
     }
 }

@@ -7,9 +7,7 @@ package com.govu.util;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -22,49 +20,36 @@ public class ZipHelper {
     public ZipHelper() {
     }
 
-    
-    
-    public ByteArrayOutputStream zipDir(String dirName) throws IOException  {
+    public ByteArrayOutputStream zipDir(String dir) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        
+
         ZipOutputStream zip = new ZipOutputStream(out);
-        addFolderToZip("", dirName, zip);
+        addDirectory("", zip, new File(dir));
         zip.close();
-        
+
         return out;
     }
 
-    private void addFolderToZip(String path, String srcFolder, ZipOutputStream zip) throws IOException {
-        File folder = new File(srcFolder);
-        if (folder.list().length == 0) {
-            addFileToZip(path, srcFolder, zip, true);
-        } else {
-            for (String fileName : folder.list()) {
-                if (path.equals("")) {
-                    addFileToZip(folder.getName(), srcFolder + "/" + fileName, zip, false);
-                } else {
-                    addFileToZip(path + "/" + folder.getName(), srcFolder + "/" + fileName, zip, false);
-                }
+    private static void addDirectory(String root, ZipOutputStream zout, File fileSource) throws IOException {
+        File[] files = fileSource.listFiles();
+        for (int i = 0; i < files.length; i++) {
+            if (files[i].isDirectory()) {
+                zout.putNextEntry(new ZipEntry(root + files[i].getName() + "/"));
+                addDirectory(root + files[i].getName() + "/", zout, files[i]);
+                continue;
             }
-        }
-    }
+            byte[] buffer = new byte[1024];
+            FileInputStream fin = new FileInputStream(files[i]);
 
-    private void addFileToZip(String path, String srcFile, ZipOutputStream zip, boolean flag) throws IOException {
-        File folder = new File(srcFile);
-        if (flag) {
-            zip.putNextEntry(new ZipEntry(path + "/" + folder.getName() + "/"));
-        } else {
-            if (folder.isDirectory()) {
-                addFolderToZip(path, srcFile, zip);
-            } else {
-                byte[] buf = new byte[1024];
-                int len;
-                FileInputStream in = new FileInputStream(srcFile);
-                zip.putNextEntry(new ZipEntry(path + "/" + folder.getName()));
-                while ((len = in.read(buf)) > 0) {
-                    zip.write(buf, 0, len);
-                }
+            zout.putNextEntry(new ZipEntry(root + files[i].getName()));
+            int length;
+
+            while ((length = fin.read(buffer)) > 0) {
+                zout.write(buffer, 0, length);
             }
+            zout.closeEntry();
+            fin.close();
         }
+
     }
 }

@@ -23,7 +23,7 @@ public class SetCookie extends BaseFunction {
 
     @Override
     public Object call(Context cx, Scriptable scope, Scriptable thisObj, Object[] args) {
-        renderer.setCookie(args[0].toString(),args[1].toString(),args.length >2 ? (Long)args[2] : 0);
+        renderer.getApp().setCookie(args[0].toString(),args[1].toString(),args.length >2 ? (Long)args[2] : 0);
         return super.call(cx, scope, thisObj, args);
     }
 

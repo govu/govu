@@ -6,6 +6,7 @@ package com.govu.engine.render;
 
 import com.db4o.collections.ActivatableHashMap;
 import com.govu.application.WebApplication;
+import com.govu.engine.module.MD5;
 import com.govu.engine.module.Print;
 import com.govu.engine.module.Redirect;
 import com.govu.engine.module.Require;
@@ -29,6 +30,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;
+import org.apache.commons.codec.digest.Md5Crypt;
 import org.apache.commons.io.FileUtils;
 import org.jboss.netty.handler.codec.http.Cookie;
 import org.mozilla.javascript.Context;
@@ -41,9 +43,8 @@ public class Renderer {
 
     public String redirect;
     private StringWriter writer;
-    private Set<HttpCookie> newCookies;
-    private Set<Cookie> cookies;
-    public static HashMap<String, HashMap<String, Object>> sessionContainer = new ActivatableHashMap<>();
+    
+    
     private WebApplication app;
     private String type;
     private String method;
@@ -52,13 +53,11 @@ public class Renderer {
     public Renderer() {
     }
 
-    public Renderer(WebApplication app, String type, String method, HashMap<String, String> query, Set<Cookie> cookies)  {
+    public Renderer(WebApplication app, String type, String method, HashMap<String, String> query)  {
         this.app = app;
         this.type=type;
         this.method = method;
-        this.newCookies = new HashSet<>();
         this.writer = new StringWriter();
-        this.cookies = cookies;
         this.query = query;
         
     }
@@ -99,6 +98,7 @@ public class Renderer {
         scope.put("fileExists", scope, new FileExists(this));
 
         scope.put("shell", scope, new Shell());
+        scope.put("md5", scope, new MD5());
         
         cx.evaluateString(scope, code.toString(), "<cmd>", 0, null);
         Context.exit();
@@ -153,60 +153,6 @@ public class Renderer {
             }
         }
         return code.toString();
-    }
-
-    public void setSession(String key, Object value) {
-        if (!sessionContainer.containsKey(getSessionID())) {
-            sessionContainer.put(getSessionID(), new ActivatableHashMap<String, Object>());
-        }
-        sessionContainer.get(getSessionID()).put(key, value);
-    }
-
-    public Object getSession(String key) {
-        if (sessionContainer.containsKey(getSessionID())) {
-            return sessionContainer.get(getSessionID()).get(key);
-        }
-        return null;
-    }
-
-    private String getSessionID() {
-        String sessionID = getCookie("SESSIONID");
-        if (sessionID == null) {
-            sessionID = UUID.randomUUID().toString().replace("-", "");
-            setCookie("SESSIONID", sessionID, 0L);
-        }
-
-        return sessionID;
-
-
-    }
-
-    public void setCookie(String key, String value, Long expireOn) {
-        HttpCookie cookie = new HttpCookie(key, value);
-        cookie.setMaxAge(expireOn);
-        newCookies.add(cookie);
-    }
-
-    public Set<HttpCookie> getCookieEncoder() {
-        return newCookies;
-    }
-
-    public String getCookie(String name) {
-        for (Iterator<Cookie> it = cookies.iterator(); it.hasNext();) {
-            Cookie cookie = it.next();
-            if (cookie.getName().equals(name)) {
-                return cookie.getValue();
-            }
-        }
-
-        for (Iterator<HttpCookie> it = newCookies.iterator(); it.hasNext();) {
-            HttpCookie httpCookie = it.next();
-            if (httpCookie.getName().equals(name)) {
-                return httpCookie.getValue();
-            }
-        }
-
-        return null;
     }
 
     public WebApplication getApp() {

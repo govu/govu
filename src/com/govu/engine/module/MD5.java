@@ -2,9 +2,10 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.govu.engine.module.session;
+package com.govu.engine.module;
 
-import com.govu.engine.render.Renderer;
+import java.io.StringWriter;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.mozilla.javascript.BaseFunction;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
@@ -13,18 +14,13 @@ import org.mozilla.javascript.Scriptable;
  *
  * @author Mehmet Ecevit
  */
-public class GetSession extends BaseFunction {
+public class MD5 extends BaseFunction {
 
-    private Renderer renderer;
-
-    public GetSession(Renderer renderer) {
-        this.renderer = renderer;
+    public MD5() {
     }
 
     @Override
     public Object call(Context cx, Scriptable scope, Scriptable thisObj, Object[] args) {
-        return renderer.getApp().getSession(args[0].toString());
+        return DigestUtils.md5Hex(args[0].toString());
     }
-
-    
 }

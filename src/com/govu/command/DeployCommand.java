@@ -25,17 +25,18 @@ import org.apache.log4j.Logger;
  *
  * @author Mehmet Ecevit
  */
-public class DeployCommand {
+public class DeployCommand extends Command {
 
-    public static String DeployHost = "http://codegovu.com";
+    
 
     public DeployCommand() {
+        super();
     }
 
+    @Override
     public void process(String[] args) {
-        Logger.getLogger("org.apache.http").setLevel(org.apache.log4j.Level.OFF);
+        
         if (args.length < 3) {
-
             System.out.println("Invalid arguments for deploy");
         }
         try {
@@ -58,20 +59,14 @@ public class DeployCommand {
             ZipHelper zipHelper = new ZipHelper();
             ByteArrayOutputStream out = zipHelper.zipDir(path);
             String zip = Base64.encodeBase64String(out.toByteArray());
-
-            HttpClient client = new DefaultHttpClient();
-            HttpPost post = new HttpPost(DeployHost + "/deploy");
-            ArrayList<NameValuePair> postParameters = new ArrayList<>();
-            postParameters.add(new BasicNameValuePair("domain", domain));
-            postParameters.add(new BasicNameValuePair("zip", zip));
+            
+            addParameter("domain", domain);
+            addParameter("zip", zip);
             if (password != null) {
-                postParameters.add(new BasicNameValuePair("password", password));
+                addParameter("password", password);
             }
-
-            post.setEntity(new UrlEncodedFormEntity(postParameters));
-            HttpResponse res = client.execute(post);
-            BufferedReader rd = new BufferedReader(new InputStreamReader(res.getEntity().getContent()));
-            String deployResponse = rd.readLine();
+            
+            String deployResponse =post("deploy");;
 
             switch (deployResponse) {
                 case "ok":
