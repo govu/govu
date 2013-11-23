@@ -86,7 +86,7 @@ public class Config implements FileMonitor.FileListener {
                     WebApplication app = appItr.next();
                     if (!props.containsKey("web." + app.getName() + ".path")) {
                         if ((app.getName().equals("base") && hasApp) || (!app.getName().equals("base"))) {
-                            System.out.println("> removing web application:" + app.getName());
+                            logger.info("> removing web application:" + app.getName());
                             apps.remove(app);
                         }
                     }
@@ -104,7 +104,7 @@ public class Config implements FileMonitor.FileListener {
         try {
             readProperties();
         } catch (IOException ex) {
-            Logger.getLogger(Config.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error(ex);
         }
     }
 }

@@ -48,8 +48,11 @@ public class DeleteCommand extends Command {
                 case "passwordError":
                     System.out.println("Password invalid, please check your password!");
                     break;
+                case "notExists!":
+                    System.out.println("Delete failed! Application does not exist!");
+                    break;
                 case "error":
-                    System.out.println("Delete failed! Please try again");
+                    System.out.println("Delete failed! Please try again!");
                     break;
             }
         } catch (IOException ex) {

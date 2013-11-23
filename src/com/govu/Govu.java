@@ -57,7 +57,6 @@ public class Govu {
     }
 
     public Govu() {
-
         logger = Logger.getLogger("govu");
         root = System.getProperty("user.dir");
         dbRoot = root + "/db";
