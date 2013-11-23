@@ -4,22 +4,12 @@
  */
 package com.govu.command;
 
+import com.govu.util.Util;
 import com.govu.util.ZipHelper;
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.log4j.Logger;
 
 /**
  *
@@ -46,6 +36,12 @@ public class DeployCommand extends Command {
 
             System.out.println("Path: " + path);
             System.out.println("Domain: " + domain);
+            
+            if (domain.toLowerCase().equals("codegovu.com") || !Util.isDomainValid(domain )) {
+                System.out.println("Invalid domain");
+                return;
+            }
+            
             if (password != null) {
                 System.out.println("Password: " + password);
             }

@@ -4,6 +4,7 @@
  */
 package com.govu.command;
 
+import com.govu.util.Util;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
@@ -30,6 +31,12 @@ public class DeleteCommand extends Command {
             String password = args.length > 2 ? args[2] : null;
 
             System.out.println("Domain: " + domain);
+            
+            if (domain.toLowerCase().equals("codegovu.com") || !Util.isDomainValid(domain )) {
+                System.out.println("Invalid domain");
+                return;
+            }
+            
             if (password != null) {
                 System.out.println("Password: " + password);
             }
